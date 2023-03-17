@@ -1,53 +1,20 @@
-import datetime
-
 import pytest
-from django.utils import timezone
 
-from polls.models import Choice, Question
+from pytest_factoryboy import register
+from polls.factories import QuestionFactory, ChoiceFactory
 
-
-@pytest.fixture()
-def new_question_factory(db):
-    def create_question(
-            question_text: str,
-            pub_date: datetime.datetime = timezone.now()
-    ):
-        question = Question.objects.create(
-            question_text=question_text,
-            pub_date=pub_date
-        )
-
-        return question
-    return create_question
+register(QuestionFactory)  # question_factory
+register(ChoiceFactory)  # choice_factory
 
 
 @pytest.fixture()
-def new_choice_factory(db):
-    def create_choice(
-            question: Question,
-            choice_text: str,
-            votes: int = 0,
-    ):
-        choice = Choice.objects.create(
-            question=question,
-            choice_text=choice_text,
-            votes=votes
-        )
-
-        return choice
-    return create_choice
+def new_question1(db, question_factory):
+    question1 = question_factory.create()
+    return question1
 
 
 @pytest.fixture()
-def new_question(db, new_question_factory):
-    return new_question_factory("How are you?")
+def new_choice1(db, choice_factory):
+    choice1 = choice_factory.create()
+    return choice1
 
-
-@pytest.fixture()
-def new_choice_1(db, new_choice_factory, new_question):
-    return new_choice_factory(new_question, "I am fine")
-
-
-@pytest.fixture()
-def new_choice_2(db, new_choice_factory, new_question):
-    return new_choice_factory(new_question, "I am not fine")
